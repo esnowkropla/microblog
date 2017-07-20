@@ -1,0 +1,6 @@
+[package]
+name = "microblog"
+version = "0.1.0"
+authors = ["Elliot Snow-Kropla <esnowkropla@gmail.com>"]
+
+[dependencies]
