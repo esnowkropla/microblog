@@ -8,4 +8,6 @@ iron = "*"
 staticfile = "*"
 mount = "*"
 router = "*"
-
+iron-sessionstorage = "*"
+persistent = "*"
+urlencoded = "*"

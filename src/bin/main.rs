@@ -37,9 +37,9 @@ struct UserHandler;
 impl Handler for UserHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         let user = get_http_param!(req, "name");
-        Ok(Response::with(
-            (status::Ok, format!("Hello <i>{}</i>", user)),
-        ))
+        let mut response = Response::with((status::Ok, format!("Hello <i>{}</i>", user)));
+        response.headers.set(ContentType::html());
+        return Ok(response);
     }
 }
 
