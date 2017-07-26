@@ -1,11 +1,15 @@
 extern crate iron;
 extern crate router;
-//extern crate staticfile;
+extern crate staticfile;
+
+extern crate microblog;
 
 use iron::prelude::Chain;
 use iron::headers::ContentType;
 use iron::{Iron, Handler, status, IronResult, Response, Request};
 use router::Router;
+use staticfile::Static;
+use std::path::Path;
 
 macro_rules! get_http_param {
     ( $r: expr, $e: expr ) => {
@@ -43,15 +47,24 @@ impl Handler for UserHandler {
     }
 }
 
+struct Custom404;
+
+impl Handler for Custom404 {
+    fn handle(&self, _: &mut Request) -> IronResult<Response> {
+        return Ok(Response::with((status::NotFound, "Custom 404")));
+    }
+}
+
 fn main() {
     let mut router = Router::new();
-    router.get("/", IndexHandler, "index");
+    //router.get("/", IndexHandler, "index");
     router.get("/user/:name", UserHandler, "user");
     //router.get("/feed", handlers.feed, "feed");
     //router.post("/post", handlers.make_post, "make_post");
     //router.get("/post/:id", handlers.post, "post");
-    //router.get("/", Static::new(Path::new("static/index.html")), "home");
+    router.get("/", Static::new(Path::new("static/index.html")), "home");
     //router.get("/*", Static::new(Path::new("static/")), "static");
+    router.get("*", Custom404, "404");
 
     let chain = Chain::new(router);
 

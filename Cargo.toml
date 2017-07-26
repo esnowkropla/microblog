@@ -11,3 +11,14 @@ router = "*"
 iron-sessionstorage = "*"
 persistent = "*"
 urlencoded = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+
+[dependencies.handlebars-iron]
+version = "*"
+features = ["watch"]
+
+[dependencies.rusqlite]
+version = "*"
+features = ["bundled"]
