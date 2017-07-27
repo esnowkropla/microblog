@@ -1,4 +1,5 @@
 extern crate iron;
+#[macro_use]
 extern crate router;
 extern crate staticfile;
 extern crate handlebars_iron;
@@ -12,7 +13,7 @@ extern crate serde_derive;
 
 use handlebars_iron::{HandlebarsEngine, DirectorySource, Watchable, Template};
 use iron::prelude::Chain;
-use iron::headers::ContentType;
+use iron::headers::{ContentType, Location};
 use iron::{Set, Iron, Handler, status, IronResult, Response, Request};
 use router::Router;
 use staticfile::Static;
@@ -78,8 +79,13 @@ impl Handler for Custom404 {
 struct PostHandler;
 
 impl Handler for PostHandler {
-    fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        return Ok(Response::with((status::Ok, "")));
+    fn handle(&self, req: &mut Request) -> IronResult<Response> {
+        let mut resp = Response::new();
+        resp.set_mut(status::Found);
+        let url = url_for!(req, "index");
+        println!("{}", url);
+        resp.headers.set(Location(format!("{}", url)));
+        return Ok(resp);
     }
 }
 
@@ -96,14 +102,14 @@ fn main() {
 
     let mut router = Router::new();
     router.get("/", IndexHandler, "index");
+    router.post("/", PostHandler, "post");
     router.get("/user/:name", UserHandler, "user");
     //router.get("/feed", handlers.feed, "feed");
     //router.post("/post", handlers.make_post, "make_post");
     //router.get("/post/:id", handlers.post, "post");
     //router.get("/", Static::new(Path::new("static/index.html")), "home");
-    router.post("/", PostHandler, "post");
-    //router.get("/*", Static::new(Path::new("static/")), "static");
-    router.get("*", Custom404, "404");
+    router.get("/*", Static::new(Path::new("static/")), "static");
+    //router.get("*", Custom404, "404");
 
     let mut chain = Chain::new(router);
     chain.link_after(hbse_ref);
